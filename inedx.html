@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Please... I'm Begging 🥺</title>
+    <script src="cdn.jsdelivr.net"></script>
+    <style>
+        :root {
+            --bg-color: #fff5f5;
+            --heart-red: #ff4b6b;
+            --text-gray: #4a4a4a;
+        }
+
+        body, html { 
+            height: 100%; margin: 0; padding: 0; overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            transition: background-color 0.8s ease;
+        }
+
+        .card {
+            width: 85%; max-width: 380px;
+            background: white; padding: 40px 25px;
+            border-radius: 45px; text-align: center;
+            box-shadow: 0 25px 50px rgba(255, 75, 107, 0.15);
+            border: 2px solid #ffe3e3;
+            z-index: 10; position: relative;
+        }
+
+        .tear {
+            position: absolute; pointer-events: none;
+            animation: fall 2s linear forwards; font-size: 24px; z-index: 5;
+        }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
+
+        .emoji-stage { font-size: 100px; display: block; margin-bottom: 10px; }
+        
+        h1 { color: var(--heart-red); font-size: 2rem; margin: 0; font-weight: 900; }
+        #plead-msg { color: var(--text-gray); font-size: 1.1rem; margin: 15px 0 25px; line-height: 1.5; min-height: 3em; }
+
+        .btn-stack { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+
+        .btn {
+            width: 100%; padding: 20px; border-radius: 30px; border: none; 
+            font-weight: 800; font-size: 1.1rem; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #yes {
+            background: var(--heart-red); color: white;
+            box-shadow: 0 10px 30px rgba(255, 75, 107, 0.4);
+            /* Static scale: will NOT get bigger */
+            transform: scale(1) !important; 
+        }
+
+        #no {
+            background: #f0f0f0; color: #a1a1a1;
+            font-size: 0.9rem; width: auto; padding: 12px 25px;
+            touch-action: none; 
+            white-space: nowrap;
+            transition: left 0.1s ease-out, top 0.1s ease-out, transform 0.2s;
+        }
+
+        #success-content { display: none; }
+        .bouncing { animation: bounce 0.8s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <div class="card" id="main-card">
+        <div id="ask-content">
+            <span class="emoji-stage" id="face">🥺</span>
+            <h1>Forgive Me?</h1>
+            <p id="plead-msg">I've been feeling terrible all day. Can we please make up? 🌸</p>
+            
+            <div class="btn-stack">
+                <button class="btn" id="yes">Yes, I forgive you! ❤️</button>
+                <button class="btn" id="no">No! 😤</button>
+            </div>
+        </div>
+
+        <div id="success-content">
+            <span class="emoji-stage bouncing">💖</span>
+            <h1 style="color: #2ecc71;">THANK YOU!</h1>
+            <p>You're the best! I promise to make it up to you! 🍦✨</p>
+        </div>
+    </div>
+
+    <script>
+        const no = document.getElementById('no');
+        const yes = document.getElementById('yes');
+        const face = document.getElementById('face');
+        const msg = document.getElementById('plead-msg');
+        const body = document.body;
+
+        const messages = [
+            "Wait, what? 😭", "Are you sure? 🥺", "I'll do the dishes! 🧼", 
+            "I'll buy you snacks! 🍫", "Don't be like that... 💔", 
+            "I'm actually crying! 💧", "Look at the puppy eyes! 🐕", 
+            "Last chance? 👉👈", "I'M SORRYYY! 🙇‍♂️"
+        ];
+
+        let count = 0;
+
+        function dodge() {
+            // Update Text
+            if(count < messages.length) {
+                no.innerText = messages[count];
+                msg.innerText = messages[count];
+                count++;
+            }
+
+            // Move the No button to a random spot
+            const padding = 60;
+            const maxX = window.innerWidth - no.offsetWidth - padding;
+            const maxY = window.innerHeight - no.offsetHeight - padding;
+            
+            const randomX = Math.max(padding, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(padding, Math.floor(Math.random() * maxY));
+
+            no.style.position = 'fixed';
+            no.style.left = `${randomX}px`;
+            no.style.top = `${randomY}px`;
+            
+            // Chaos Mode: Shrink the No button so it's harder to hit
+            const scale = Math.max(0.5, 1 - (count * 0.05));
+            no.style.transform = `scale(${scale})`;
+
+            // Change Face
+            const faces = ["😢", "😭", "🥀", "💔", "🩹", "🧎‍♂️"];
+            face.innerText = faces[Math.floor(Math.random() * faces.length)];
+
+            // Tear effect
+            const tear = document.createElement('div');
+            tear.className = 'tear';
+            tear.innerHTML = '💧';
+            tear.style.left = Math.random() * 100 + 'vw';
+            tear.style.top = '-20px';
+            document.body.appendChild(tear);
+            setTimeout(() => tear.remove(), 2000);
+        }
+
+        // The button "escapes" on hover or touch
+        no.addEventListener('mouseover', dodge);
+        no.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            dodge();
+        });
+
+        yes.onclick = () => {
+            document.getElementById('ask-content').style.display = 'none';
+            document.getElementById('success-content').style.display = 'block';
+            body.style.backgroundColor = "#f2fff7";
+            
+            confetti({
+                particleCount: 200,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff4b6b', '#2ecc71', '#ffffff']
+            });
+        };
+    </script>
+</body>
+</html>
